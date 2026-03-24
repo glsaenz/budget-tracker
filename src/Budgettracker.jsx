@@ -3,6 +3,8 @@ import { useChartData } from "./hooks/useChartData";
 import { MONTHS, CATEGORIES, CAT_COLORS } from "./constants";
 import { fmt } from "./utils";
 import SummaryCard from "./components/SummaryCard";
+import CategoryBar from "./components/CategoryBar";
+import TransactionRow from "./components/TransactionRow";
 
 export default function BudgetTracker() {
   const {
@@ -53,6 +55,52 @@ export default function BudgetTracker() {
           color={net >= 0 ? "#1D9E75" : "#D85A30"}
         />
       </div>
+      
+      {/* Category Breakdown */}
+      <div style={styles.panel}>
+        <p style={styles.panelTitle}>Spending by category</p>
+        {catChartData.length === 0
+          ? <p style={styles.empty}>No expenses this month.</p>
+          : catChartData.map(({ name, value }) => (
+              <CategoryBar
+                key={name}
+                cat={name}
+                amount={value}
+                total={expense}
+                color={CAT_COLORS[name]}
+              />
+            ))
+        }
+      </div>
+
+      {/* Transactions Table */}
+      <div style={styles.panel}>
+        <p style={styles.panelTitle}>Transactions</p>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              {["Description", "Category", "Date", "Amount", ""].map((h) => (
+                <th key={h} style={styles.th}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {monthTxs.length === 0
+              ? (
+                <tr>
+                  <td colSpan={5} style={{ ...styles.td, color: "#aaa", padding: "16px 0" }}>
+                    No transactions this month.
+                  </td>
+                </tr>
+              )
+              : [...monthTxs].reverse().map((tx) => (
+                  <TransactionRow key={tx.id} tx={tx} onDelete={deleteTx} />
+                ))
+            }
+          </tbody>
+        </table>
+      </div>
+
     </div>
   );
 }
@@ -125,5 +173,44 @@ const styles = {
     fontSize: 11,
     fontFamily: "inherit",
     whiteSpace: "nowrap",
+  },
+  panel: {
+  background: "#fff",
+  border: "1px solid #eee",
+  borderRadius: 12,
+  padding: "1.25rem",
+  marginBottom: 16,
+  },
+  panelTitle: {
+    fontSize: 11,
+    color: "#999",
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    margin: "0 0 1rem",
+  },
+  empty: {
+    fontSize: 13,
+    color: "#aaa",
+    margin: 0,
+  },
+  table: {
+  width: "100%",
+  borderCollapse: "collapse",
+  },
+  th: {
+    fontSize: 11,
+    color: "#999",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    padding: "0 0 8px",
+    borderBottom: "1px solid #eee",
+    textAlign: "left",
+    fontWeight: 400,
+  },
+  td: {
+    padding: "10px 0",
+    fontSize: 13,
+    borderBottom: "1px solid #f5f5f3",
+    verticalAlign: "middle",
   },
 };
