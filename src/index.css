@@ -10,3 +10,11 @@ body {
   background: #f9f9f7;
   padding: 2rem;
 }
+
+/* ── Responsive ────────────────────────────────── */
+
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+}
